@@ -1,11 +1,22 @@
 const mongoose = require('mongoose');
 
+// Schéma Book
 const bookSchema = mongoose.Schema({
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    imageUrl: { type: String, required: true },
     userId: { type: String, required: true },
-    price: { type: Number, required: true },
+    title: { type: String, required: true },
+    author: { type: String, required: true },
+    year: { type: Number, required: true },
+    genre: { type: String, required: true },
+    imageUrl: { type: String, required: true },
+    //price: { type: Number, required: true },//
+    ratings: [
+        {
+            userId: { type: String },
+            grade: { type: Number },
+        },
+    ],
+    averageRating: { type: Number },
 });
 
+// On exporte le modèle comme modèle réutilisable
 module.exports = mongoose.model('Book', bookSchema);
