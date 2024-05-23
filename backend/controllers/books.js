@@ -1,4 +1,5 @@
 const fs = require('fs');
+const sharp = require('sharp');
 const Book = require('../models/Book');
 
 // Logique métier - Contrôleur
@@ -11,20 +12,43 @@ exports.createBook = (req, res, next) => {
     delete bookObject._id;
     // Suppression de _userId auquel on ne peut faire confiance
     delete bookObject._userId;
-    // Création d'une instance du modèle Book
-    const book = new Book({
-        ...bookObject,
-        userId: req.auth.userId,
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
-    });
-    // Enregistrement dans la base de données
-    book
-        .save()
+
+    // Chemin du fichier image téléchargé
+    const inputFilePath = req.file.path;
+    // Nouveau chemin du fichier image transformé
+    const outputFilePath = `${req.file.path.split('.')[0]}.webp`;
+
+    // Utilisation de sharp pour redimensionner et convertir l'image
+    sharp(inputFilePath)
+        .resize(463, 595)
+        .toFormat('webp')
+        .toFile(outputFilePath)
         .then(() => {
-            res.status(201).json({ message: 'Livre enregistré !' });
+            // Suppression de l'image originale non redimensionnée
+            fs.unlink(inputFilePath, (err) => {
+                if (err) console.log(err);
+            });
+
+            // Création d'une instance du modèle Book avec l'image transformée
+            const book = new Book({
+                ...bookObject,
+                userId: req.auth.userId,
+                imageUrl: `${req.protocol}://${req.get('host')}/images/${outputFilePath.split('/').pop()}`,
+            });
+
+            // Enregistrement dans la base de données
+            book.save()
+                .then(() => {
+                    res.status(201).json({ message: 'Livre enregistré !' });
+                })
+                .catch((error) => {
+                    res.status(400).json({ error });
+                });
         })
         .catch((error) => {
-            res.status(400).json({ error });
+            res.status(500).json({
+                error: "Erreur lors du traitement de l'image",
+            });
         });
 };
 
@@ -41,9 +65,9 @@ exports.modifyBook = (req, res, next) => {
     // (ici, nous recevons soit un élément form-data, soit des données JSON, selon si le fichier image a été modifié ou non)
     const bookObject = req.file
         ? {
-            ...JSON.parse(req.body.book),
-            imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
-        }
+              ...JSON.parse(req.body.book),
+              imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+          }
         : { ...req.body };
     // Suppression de _userId auquel on ne peut faire confiance
     delete bookObject._userId;
@@ -57,10 +81,10 @@ exports.modifyBook = (req, res, next) => {
                 // Séparation du nom du fichier image existant
                 const filename = book.imageUrl.split('/images/')[1];
                 // Si l'image a été modifiée, on supprime l'ancienne
-                req.file && fs.unlink(`images/${filename}`, (err => {
+                req.file &&
+                    fs.unlink(`images/${filename}`, (err) => {
                         if (err) console.log(err);
-                    })
-                );
+                    });
                 // Mise à jour du livre
                 Book.updateOne(
                     { _id: req.params.id },
