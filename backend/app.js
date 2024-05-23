@@ -9,7 +9,7 @@ const app = express();
 
 mongoose
     .connect(
-        'mongodb+srv://Riiturii:<PASS>@cluster0.pzqkuge.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
+        'mongodb+srv://Riiturii:OpenClassRoom-P6-Book@cluster0.pzqkuge.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
         { useNewUrlParser: true, useUnifiedTopology: true },
     )
     .then(() => console.log('Connexion à MongoDB réussie !'))
