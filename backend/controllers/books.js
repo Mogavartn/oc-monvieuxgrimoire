@@ -34,6 +34,7 @@ exports.createBook = (req, res, next) => {
                 ...bookObject,
                 userId: req.auth.userId,
                 imageUrl: `${req.protocol}://${req.get('host')}/images/${outputFilePath.split('/').pop()}`,
+                averageRating: bookObject.ratings[0].grade
             });
 
             // Enregistrement dans la base de données
@@ -65,9 +66,9 @@ exports.modifyBook = (req, res, next) => {
     // (ici, nous recevons soit un élément form-data, soit des données JSON, selon si le fichier image a été modifié ou non)
     const bookObject = req.file
         ? {
-              ...JSON.parse(req.body.book),
-              imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
-          }
+            ...JSON.parse(req.body.book),
+            imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+        }
         : { ...req.body };
     // Suppression de _userId auquel on ne peut faire confiance
     delete bookObject._userId;
@@ -133,6 +134,56 @@ exports.deleteBook = (req, res, next) => {
 exports.getAllBooks = (req, res, next) => {
     // Renvoie un tableau contenant tous les Books de la base de données
     Book.find()
+        .then((books) => res.status(200).json(books))
+        .catch((error) => res.status(400).json({ error }));
+};
+
+// POST => Ajout d'une note à un livre
+exports.rateBook = (req, res, next) => {
+    const userId = req.auth.userId;
+    const bookId = req.params.id;
+    const grade = req.body.rating;
+
+    // Validation de la note (grade) pour s'assurer qu'elle est un nombre et est dans une plage valide
+    if (typeof grade !== 'number' || grade < 0 || grade > 5) {
+        return res.status(400).json({ error: 'La note doit être un nombre entre 0 et 5.' });
+    }
+    // Logique pour ajouter la note au livre en utilisant l'ID de l'utilisateur récupéré
+    Book.findOne({ _id: bookId })
+        .then((book) => {
+            if (!book) {
+                return res.status(404).json({ error: 'Livre non trouvé!' });
+            }
+            // Vérifiez si l'utilisateur a déjà noté ce livre
+            const existingRating = book.ratings.find((rating) => rating.userId === userId);
+            if (existingRating) {
+                return res.status(400).json({ error: 'Vous avez déjà noté ce livre!' });
+            }
+            // Ajoutez la nouvelle note
+            const newRating = { userId, grade };
+            book.ratings.push(newRating);
+            // Recalculez la note moyenne
+            const totalRating = book.ratings.reduce((acc, rating) => acc + rating.grade, 0);
+            book.averageRating = totalRating / book.ratings.length;
+
+            book.save()
+                .then((savedBook) => {
+                    res.status(200).json(savedBook);
+                })
+                .catch((error) => {
+                    res.status(500).json({ error: 'Erreur lors de la sauvegarde du livre.' });
+                });
+        })
+        .catch((error) => {
+            res.status(500).json({ error: 'Erreur lors de la recherche du livre.' });
+        });
+    };
+
+// GET => Récupération des livres les mieux notés
+exports.getBestRatedBooks = (req, res, next) => {
+    Book.find()
+        .sort({ averageRating: -1 }) // Trie par note moyenne décroissante
+        .limit(3) // Limite aux 3 premiers livres
         .then((books) => res.status(200).json(books))
         .catch((error) => res.status(400).json({ error }));
 };
