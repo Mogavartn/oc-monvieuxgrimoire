@@ -1,5 +1,4 @@
 /* eslint-disable react/jsx-props-no-spreading */
-
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useUser } from '../../lib/customHooks';
@@ -8,6 +7,7 @@ import { getBook, deleteBook } from '../../lib/common';
 import BookInfo from '../../components/Books/BookInfo/BookInfo';
 import BookRatingForm from '../../components/Books/BookRatingForm/BookRatingForm';
 import BookDeleteImage from '../../images/book_delete.png';
+import Slider from 'react-slick';
 import BestRatedBooks from '../../components/Books/BestRatedBooks/BestRatedBooks';
 import BackArrow from '../../components/BackArrow/BackArrow';
 
