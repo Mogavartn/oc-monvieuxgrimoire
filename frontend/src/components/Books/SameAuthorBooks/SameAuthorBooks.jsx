@@ -1,23 +1,43 @@
 import React from 'react';
-import { useBestRatedBooks } from '../../../lib/customHooks';
+import PropTypes from 'prop-types';
+import { useAllBooks } from '../../../lib/customHooks';
 import BookItem from '../BookItem/BookItem';
 import styles from './SameAuthorBooks.module.css';
 
-function SameAuthorBooks() {
-  const { bestRatedBooks } = useBestRatedBooks();
+function SameAuthorBooks({ author }) {
+  const { allBooks, loading, error } = useAllBooks();
 
-  const SameAuthorBooksContent = bestRatedBooks.length > 0 ? (
-    bestRatedBooks.map((elt) => <BookItem key={`book-${elt.id}`} book={elt} size={3} />)
-  ) : <h3>Aucune recommendation</h3>;
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return (
+      <p>
+        Error loading books:
+        {error.message}
+      </p>
+    );
+  }
+
+  const sameAuthorBooks = allBooks.filter((book) => book.author === author).slice(0, 3);
+
+  const sameAuthorBooksContent = sameAuthorBooks.length > 0 ? (
+    sameAuthorBooks.map((book) => <BookItem key={`book-${book.id}`} book={book} size={3} />)
+  ) : <h3>Aucun livre du même auteur</h3>;
 
   return (
     <section className={`content-container ${styles.SameAuthorBooks}`}>
       <h2>Du même auteur</h2>
       <div className={styles.List}>
-        {SameAuthorBooksContent}
+        {sameAuthorBooksContent}
       </div>
     </section>
   );
 }
+
+SameAuthorBooks.propTypes = {
+  author: PropTypes.string.isRequired,
+};
 
 export default SameAuthorBooks;

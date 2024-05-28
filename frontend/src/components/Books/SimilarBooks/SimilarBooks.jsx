@@ -1,23 +1,50 @@
 import React from 'react';
-import { useBestRatedBooks } from '../../../lib/customHooks';
+import PropTypes from 'prop-types';
+import { useAllBooks } from '../../../lib/customHooks';
 import BookItem from '../BookItem/BookItem';
 import styles from './SimilarBooks.module.css';
 
-function SimilarBooks() {
-  const { bestRatedBooks } = useBestRatedBooks();
+function SimilarBooks({ genre }) {
+  const { allBooks, loading, error } = useAllBooks();
 
-  const SimilarBooksContent = bestRatedBooks.length > 0 ? (
-    bestRatedBooks.map((elt) => <BookItem key={`book-${elt.id}`} book={elt} size={3} />)
-  ) : <h3>Aucune recommendation</h3>;
+  // Log pour vérifier les valeurs
+  console.log('All books:', allBooks);
+  console.log('Genre:', genre);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return (
+      <p>
+        Error loading books:
+        {error.message}
+      </p>
+    );
+  }
+
+  const similarBooks = allBooks.filter((book) => book.genre === genre).slice(0, 3);
+
+  // Log pour vérifier les livres similaires trouvés
+  console.log('Similar books:', similarBooks);
+
+  const similarBooksContent = similarBooks.length > 0 ? (
+    similarBooks.map((book) => <BookItem key={`book-${book.id}`} book={book} size={3} />)
+  ) : <h3>Aucun livre du même genre</h3>;
 
   return (
     <section className={`content-container ${styles.SimilarBooks}`}>
       <h2>Livres similaires</h2>
       <div className={styles.List}>
-        {SimilarBooksContent}
+        {similarBooksContent}
       </div>
     </section>
   );
 }
+
+SimilarBooks.propTypes = {
+  genre: PropTypes.string.isRequired,
+};
 
 export default SimilarBooks;

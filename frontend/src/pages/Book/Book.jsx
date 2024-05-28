@@ -1,5 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
+import Slider from 'react-slick';
 import { useParams, Link } from 'react-router-dom';
 import { useUser } from '../../lib/customHooks';
 import styles from './Book.module.css';
@@ -7,9 +8,13 @@ import { getBook, deleteBook } from '../../lib/common';
 import BookInfo from '../../components/Books/BookInfo/BookInfo';
 import BookRatingForm from '../../components/Books/BookRatingForm/BookRatingForm';
 import BookDeleteImage from '../../images/book_delete.png';
-import Slider from 'react-slick';
 import BestRatedBooks from '../../components/Books/BestRatedBooks/BestRatedBooks';
+import SameAuthorBooks from '../../components/Books/SameAuthorBooks/SameAuthorBooks';
+import SimilarBooks from '../../components/Books/SimilarBooks/SimilarBooks';
 import BackArrow from '../../components/BackArrow/BackArrow';
+
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 function Book() {
   const { connectedUser, userLoading } = useUser();
@@ -63,7 +68,15 @@ function Book() {
 
   const loadingContent = (<h1>Chargement ...</h1>);
 
-  const bookContent = !loading && !book.delete ? (
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  };
+
+  const bookContent = !loading && !book?.delete ? (
     <div>
       <div className={styles.Book}>
         <div className={styles.BookImage} style={{ backgroundImage: `url("${book.imageUrl}")` }} />
@@ -91,9 +104,22 @@ function Book() {
         </div>
       </div>
       <hr />
-      <BestRatedBooks />
+      <Slider {...settings}>
+        <div>
+          <BestRatedBooks />
+        </div>
+        {book.author && (
+          <div>
+            <SameAuthorBooks author={book.author} />
+          </div>
+        )}
+        <div>
+          <SimilarBooks genre={book.genre} />
+        </div>
+      </Slider>
     </div>
   ) : null;
+
   const deletedContent = book?.delete ? (
     <div className={styles.Deleted}>
       <h1>{book.title}</h1>
@@ -113,8 +139,8 @@ function Book() {
         {bookContent}
       </div>
       {book?.delete ? deletedContent : null}
-
     </div>
   );
 }
+
 export default Book;
