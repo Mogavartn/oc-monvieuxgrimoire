@@ -23,7 +23,10 @@ function SameAuthorBooks({ author }) {
   const sameAuthorBooks = allBooks.filter((book) => book.author === author).slice(0, 3);
 
   const sameAuthorBooksContent = sameAuthorBooks.length > 0 ? (
-    sameAuthorBooks.map((book) => <BookItem key={`book-${book.id}`} book={book} size={3} />)
+    sameAuthorBooks.map((book) => (
+      // eslint-disable-next-line no-underscore-dangle
+      <BookItem key={`book-${book.id || book._id}`} book={book} size={3} />
+    ))
   ) : <h3>Aucun livre du même auteur</h3>;
 
   return (

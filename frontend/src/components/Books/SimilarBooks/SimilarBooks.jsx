@@ -30,8 +30,11 @@ function SimilarBooks({ genre }) {
   console.log('Similar books:', similarBooks);
 
   const similarBooksContent = similarBooks.length > 0 ? (
-    similarBooks.map((book) => <BookItem key={`book-${book.id}`} book={book} size={3} />)
-  ) : <h3>Aucun livre du même genre</h3>;
+    similarBooks.map((book) => (
+      // eslint-disable-next-line no-underscore-dangle
+      <BookItem key={`book-${book.id || book._id}`} book={book} size={3} />
+    ))
+  ) : <h3>Aucun livre similaire</h3>;
 
   return (
     <section className={`content-container ${styles.SimilarBooks}`}>
