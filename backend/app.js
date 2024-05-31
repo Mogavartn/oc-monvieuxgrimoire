@@ -1,3 +1,4 @@
+require('dotenv').config(); // Chargement du fichier .env et de ses variables
 const express = require('express'); // Importation du framework Express pour la gestion des routes HTTP
 const mongoose = require('mongoose'); // Importation de Mongoose pour la connexion à la base de données MongoDB
 const booksRoutes = require('./routes/books'); // Importation des routes liées aux livres
@@ -7,7 +8,7 @@ const path = require('path'); // Importation du module Path pour la gestion des 
 // Connexion à la base de données MongoDB
 mongoose
     .connect(
-        'mongodb+srv://Riiturii:OpenClassRoom-P6-Book@cluster0.pzqkuge.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
+        `mongodb+srv://Riiturii:${process.env.DB_PASSWORD}@cluster0.pzqkuge.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`,
         { useNewUrlParser: true, useUnifiedTopology: true },
     )
     .then(() => console.log('Connexion à MongoDB réussie !')) // Message de succès en cas de connexion réussie
