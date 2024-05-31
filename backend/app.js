@@ -9,7 +9,6 @@ const path = require('path'); // Importation du module Path pour la gestion des 
 mongoose
     .connect(
         `mongodb+srv://Riiturii:${process.env.DB_PASSWORD}@cluster0.pzqkuge.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`,
-        { useNewUrlParser: true, useUnifiedTopology: true },
     )
     .then(() => console.log('Connexion à MongoDB réussie !')) // Message de succès en cas de connexion réussie
     .catch(() => console.log('Connexion à MongoDB échouée !')); // Message d'erreur en cas de connexion échouée
