@@ -5,13 +5,18 @@ const booksRoutes = require('./routes/books'); // Importation des routes liées 
 const userRoutes = require('./routes/user'); // Importation des routes liées aux utilisateurs
 const path = require('path'); // Importation du module Path pour la gestion des chemins de fichiers
 
+// Validation des variables d'environnement
+const { DB_USERNAME, DB_PASSWORD, DB_CLUSTER, DB_NAME } = process.env;
+if (!DB_USERNAME || !DB_PASSWORD || !DB_CLUSTER || !DB_NAME) {
+    console.error('Erreur: Certaines variables d\'environnement ne sont pas définies');
+    process.exit(1);
+}
+
 // Connexion à la base de données MongoDB
-mongoose
-    .connect(
-        `mongodb+srv://Riiturii:${process.env.DB_PASSWORD}@cluster0.pzqkuge.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`,
-    )
+const dbUri = `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@${DB_CLUSTER}/${DB_NAME}?retryWrites=true&w=majority&appName=Cluster0`;
+mongoose.connect(dbUri)
     .then(() => console.log('Connexion à MongoDB réussie !')) // Message de succès en cas de connexion réussie
-    .catch(() => console.log('Connexion à MongoDB échouée !')); // Message d'erreur en cas de connexion échouée
+    .catch((error) => console.error('Connexion à MongoDB échouée !', error)); // Message d'erreur en cas de connexion échouée
 
 // Création de l'application Express
 const app = express();
