@@ -24,10 +24,10 @@ const app = express();
 // Middleware permettant à Express d'extraire le corps JSON des requêtes POST
 app.use(express.json());
 
-// Middleware gérant les erreurs de CORS (Cross-Origin Resource Sharing)
+// Middleware gérant les erreurs de CORS
 app.use((req, res, next) => {
-    // Configuration des en-têtes CORS pour autoriser l'accès depuis n'importe quelle origine
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    // Configuration des en-têtes CORS pour autoriser l'accès depuis votre frontend
+    res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL); // Utilisation d'une variable d'environnement pour l'URL du frontend
     // Autorisation d'ajouter les en-têtes spécifiés aux requêtes
     res.setHeader(
         'Access-Control-Allow-Headers',
