@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { API_ROUTES } from './constants';
+import { API_ROUTES } from '../utils/constants';
 
 export function useUser() {
   const [connectedUser, setConnectedUser] = useState(null);
