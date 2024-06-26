@@ -5,7 +5,7 @@ import {
 import SignIn from './pages/SignIn/SignIn';
 import Home from './pages/Home/Home';
 import Book from './pages/Book/Book';
-import { APP_ROUTES } from './utils/constants';
+import { APP_ROUTES } from '../src/utils/constants';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 import AddBook from './pages/AddBook/AddBook';
