@@ -6,8 +6,8 @@ const userRoutes = require('./routes/user'); // Importation des routes liées au
 const path = require('path'); // Importation du module Path pour la gestion des chemins de fichiers
 
 // Validation des variables d'environnement
-const { DB_USERNAME, DB_PASSWORD, DB_CLUSTER, DB_NAME } = process.env;
-if (!DB_USERNAME || !DB_PASSWORD || !DB_CLUSTER || !DB_NAME) {
+const { DB_USERNAME, DB_PASSWORD, DB_CLUSTER, DB_NAME, FRONTEND_URL } = process.env;
+if (!DB_USERNAME || !DB_PASSWORD || !DB_CLUSTER || !DB_NAME || !FRONTEND_URL) {
     console.error('Erreur: Certaines variables d\'environnement ne sont pas définies');
     process.exit(1);
 }
@@ -24,10 +24,14 @@ const app = express();
 // Middleware permettant à Express d'extraire le corps JSON des requêtes POST
 app.use(express.json());
 
-// Middleware gérant les erreurs de CORS
 app.use((req, res, next) => {
     // Configuration des en-têtes CORS pour autoriser l'accès depuis votre frontend
-    res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL); // Utilisation d'une variable d'environnement pour l'URL du frontend
+    const allowedOrigins = [FRONTEND_URL];
+    const origin = req.headers.origin;
+
+    if (allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
     // Autorisation d'ajouter les en-têtes spécifiés aux requêtes
     res.setHeader(
         'Access-Control-Allow-Headers',
