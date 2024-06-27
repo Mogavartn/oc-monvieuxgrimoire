@@ -7,9 +7,9 @@ export const API_ROUTES = {
 };
 
 export const APP_ROUTES = {
-  SIGN_UP: '/Inscription',
-  SIGN_IN: '/Connexion',
-  ADD_BOOK: '/Ajouter',
-  BOOK: '/livre/:id',
+  SIGN_UP: 'Inscription',
+  SIGN_IN: 'Connexion',
+  ADD_BOOK: 'Ajouter',
+  BOOK: 'livre/:id',
   UPDATE_BOOK: 'livre/modifier/:id',
 };
