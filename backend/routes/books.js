@@ -11,8 +11,8 @@ router.get('/', booksCtrl.getAllBooks); // Route pour récupérer tous les livre
 router.get('/bestrating', booksCtrl.getBestRatedBooks); // Route pour récupérer les livres les mieux notés
 router.get('/:id', booksCtrl.getOneBook); // Route pour récupérer un livre spécifique par son ID
 
-router.post('/', auth, upload, booksCtrl.createBook); // Route pour créer un nouveau livre (nécessite une authentification et un téléchargement d'image)
-router.post('/:id/rating', auth, booksCtrl.rateBook); // Route pour ajouter une note à un livre (nécessite une authentification)
+router.post('/', /*auth*/ upload, booksCtrl.createBook); // Route pour créer un nouveau livre (nécessite une authentification et un téléchargement d'image)
+router.post('/:id/rating', /*auth*/ booksCtrl.rateBook); // Route pour ajouter une note à un livre (nécessite une authentification)
 
 router.put('/:id', auth, upload, booksCtrl.modifyBook); // Route pour modifier un livre existant (nécessite une authentification et un téléchargement d'image)
 router.delete('/:id', auth, booksCtrl.deleteBook); // Route pour supprimer un livre existant (nécessite une authentification)
